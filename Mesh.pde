@@ -33,19 +33,30 @@ class Mesh {
     
     vertices = new ArrayList<PVector>();
 
-    // for example if we were to render a quad:
-    int children = shape.getChildCount();
-    println(children);
-    for (int i = 0; i < children; i++) {
-      PShape child = shape.getChild(i);
-      int total = child.getVertexCount();
-      for (int j = 0; j < total; j++) {
-        PVector v = child.getVertex(0);
-        vertices.add(v);
+    for (int i=0; i<shape.getChildCount (); i++) {
+      if (shape.getChild(i).getVertexCount() % 3 == 0) {
+        for (int j=0; j<shape.getChild (i).getVertexCount(); j++) {
+          PVector p = shape.getChild(i).getVertex(j);
+          //PVector n = shape.getChild(i).getNormal(j);
+          //float u = shape.getChild(i).getTextureU(j);
+          //float v = shape.getChild(i).getTextureV(j);
+          //normal(n.x, n.y, n.z);
+          //vertex(p.x, p.y, p.z, u, v);
+          
+          vertices.add(p);
+        }
       }
     }
     
-
+    //for (int i = 0; i < children; i++) {
+    //  PShape child = shape.getChild(i);
+    //  int total = child.getVertexCount();
+    //  for (int j = 0; j < total; j++) {
+    //    PVector v = child.getVertex(1);
+    //    vertices.add(v);
+    //  }
+    //}
+    
     shape = createShape();
     shape.beginShape();
     for(PVector v : vertices)
@@ -59,10 +70,40 @@ class Mesh {
   // TODO: current implementation targets a quad.
   // Adapt me, as necessary
   void drawImmediate() { 
-    translate(0,-100);
-    beginShape(TRIANGLE);
-    for(PVector v : vertices)
-      vertex(v.x, v.y ,v.z);
+    //translate(0,-100);
+    PShape s = createShape();
+    s.beginShape(TRIANGLE_STRIP);
+    for (int i=0; i<shape.getChildCount (); i++) {
+      if (shape.getChild(i).getVertexCount() ==3) {
+        for (int j=0; j<shape.getChild (i).getVertexCount(); j++) {
+          PVector p = shape.getChild(i).getVertex(j);
+          PVector n = shape.getChild(i).getNormal(j);
+          float u = shape.getChild(i).getTextureU(j);
+          float v = shape.getChild(i).getTextureV(j);
+          s.normal(n.x, n.y, n.z);
+          s.vertex(p.x, p.y, p.z, u, v);
+        }
+      }
+    }      
+    s.endShape();
+  }
+  
+  void points() {
+    translate(0,-100); 
+    PShape s =createShape();
+    beginShape(POINTS);
+    strokeWeight(2);
+    stroke(0,255,0);
+    int children = shape.getChildCount();
+    for (int i = 0; i < children; i++) {
+      PShape child = shape.getChild(i);
+      int total = child.getVertexCount();
+      for (int j = 0; j < total; j++) {
+        PVector v = child.getVertex(j);
+        //point(v.x, v.y, v.z);
+        vertex(v.x, v.y, v.z);
+      }
+    }
     endShape();
   }
 
@@ -71,7 +112,7 @@ class Mesh {
 
     // mesh visual attributes 
     // manipulate me as you wish
-    int strokeWeight = 3;
+    int strokeWeight = 2; //3
     color lineColor = color(255, retained ? 0 : 255, 0);
     color faceColor = color(0, retained ? 0 : 255, 255, 100);
 
@@ -89,7 +130,7 @@ class Mesh {
     case 3:
       noFill();
       noStroke();
-      points(shape);
+      points();
       break;
     }
 
@@ -114,63 +155,5 @@ class Mesh {
   }
 }
 
-PShape points(PShape r) {
-  PShape s = createShape();
-  translate(0,-100);
-  s.beginShape(POINTS);
-  s.noFill();
-  s.stroke(0,255,0);
-  int children = r.getChildCount();
-  println(children);
-  for (int i = 0; i < children; i++) {
-    PShape child = r.getChild(i);
-    int total = child.getVertexCount();
-    for (int j = 0; j < total; j++) {
-      PVector v = child.getVertex(j);
-      point(v.x, v.y, v.z);
-    }
-  }
-  s.endShape();
-  return s;
-}
+
   
-
-PShape createShapeQuad(PShape r) {
-  PShape s = createShape();
-  s.beginShape(QUADS);
-  s.noStroke();
-  for (int i=100; i<r.getChildCount (); i++) {
-    if (r.getChild(i).getVertexCount() ==4) {
-      for (int j=0; j<r.getChild (i).getVertexCount(); j++) {
-        PVector p = r.getChild(i).getVertex(j);
-        PVector n = r.getChild(i).getNormal(j);
-        float u = r.getChild(i).getTextureU(j);
-        float v = r.getChild(i).getTextureV(j);
-        s.normal(n.x, n.y, n.z);
-        s.vertex(p.x, p.y, p.z, u, v);
-      }
-    }
-  }
-  s.endShape();
-  return s;
-}
-
-PShape createShapeTri(PShape r) {
-  PShape s = createShape();
-  s.beginShape(TRIANGLES);
-  s.noStroke();
-  for (int i=100; i<r.getChildCount (); i++) {
-    if (r.getChild(i).getVertexCount() ==3) {
-      for (int j=0; j<r.getChild (i).getVertexCount(); j++) {
-        PVector p = r.getChild(i).getVertex(j);
-        PVector n = r.getChild(i).getNormal(j);
-        float u = r.getChild(i).getTextureU(j);
-        float v = r.getChild(i).getTextureV(j);
-        s.normal(n.x, n.y, n.z);
-        s.vertex(p.x, p.y, p.z, u, v);
-      }
-    }
-  }
-  s.endShape();
-  return s;
-}
