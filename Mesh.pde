@@ -2,7 +2,7 @@ class Mesh {
   // radius refers to the mesh 'bounding sphere' redius.
   // see: https://en.wikipedia.org/wiki/Bounding_sphere
   float radius = 200;
-  PShape shape, triShape, quadShape;
+  PShape shape;
   // mesh representation
   ArrayList<PVector> vertices;
 
@@ -22,70 +22,52 @@ class Mesh {
   Mesh() {
     build();
     //use processing style instead of pshape's, see https://processing.org/reference/PShape.html
-
     shape.disableStyle();
   }
 
   // compute both mesh vertices and pshape
   // TODO: implement me
   void build() {
-    shape = loadShape("wolf.obj");        
-    
     vertices = new ArrayList<PVector>();
 
-    for (int i=0; i<shape.getChildCount (); i++) {
-      if (shape.getChild(i).getVertexCount() % 3 == 0) {
-        for (int j=0; j<shape.getChild (i).getVertexCount(); j++) {
-          PVector p = shape.getChild(i).getVertex(j);
-          //PVector n = shape.getChild(i).getNormal(j);
-          //float u = shape.getChild(i).getTextureU(j);
-          //float v = shape.getChild(i).getTextureV(j);
-          //normal(n.x, n.y, n.z);
-          //vertex(p.x, p.y, p.z, u, v);
-          
-          vertices.add(p);
-        }
-      }
-    }
+    vertices.add(new PVector(-100, -100, -100));
+    vertices.add(new PVector( 100, -100, -100));
+    vertices.add(new PVector(   0,    0,  100));
     
-    //for (int i = 0; i < children; i++) {
-    //  PShape child = shape.getChild(i);
-    //  int total = child.getVertexCount();
-    //  for (int j = 0; j < total; j++) {
-    //    PVector v = child.getVertex(1);
-    //    vertices.add(v);
-    //  }
-    //}
+    vertices.add(new PVector( 100, -100, -100));
+    vertices.add(new PVector( 100,  100, -100));
+    vertices.add(new PVector(   0,    0,  100));
+    
+    vertices.add(new PVector( 100, 100, -100));
+    vertices.add(new PVector(-100, 100, -100));
+    vertices.add(new PVector(   0,   0,  100));
+    
+    vertices.add(new PVector(-100,  100, -100));
+    vertices.add(new PVector(-100, -100, -100));
+    vertices.add(new PVector(   0,    0,  100));
+    
+    // for example if we were to render a quad:
+   
     
     shape = createShape();
-    shape.beginShape();
+    shape.beginShape(TRIANGLES);
+    //shape.beginShape(QUAD_STRIP);
     for(PVector v : vertices)
       shape.vertex(v.x, v.y ,v.z);
     shape.endShape();
-        
+
+
     //don't forget to compute radius too
   }
 
   // transfer geometry every frame
   // TODO: current implementation targets a quad.
   // Adapt me, as necessary
-  void drawImmediate() { 
-    //translate(0,-100);
-    PShape s = createShape();
-    s.beginShape(TRIANGLE_STRIP);
-    for (int i=0; i<shape.getChildCount (); i++) {
-      if (shape.getChild(i).getVertexCount() ==3) {
-        for (int j=0; j<shape.getChild (i).getVertexCount(); j++) {
-          PVector p = shape.getChild(i).getVertex(j);
-          PVector n = shape.getChild(i).getNormal(j);
-          float u = shape.getChild(i).getTextureU(j);
-          float v = shape.getChild(i).getTextureV(j);
-          s.normal(n.x, n.y, n.z);
-          s.vertex(p.x, p.y, p.z, u, v);
-        }
-      }
-    }      
-    s.endShape();
+  void drawImmediate() {
+    beginShape(QUADS);
+    for(PVector v : vertices)
+      vertex(v.x, v.y ,v.z);
+    endShape();
   }
   
   void points() {
@@ -133,11 +115,10 @@ class Mesh {
       points();
       break;
     }
-
+    
     // rendering modes
     if (retained){
-      //translate(0,-100);
-      shape(shape,0,-100);
+      shape(shape);
     }else{
       //translate(0,-100);
       drawImmediate();
