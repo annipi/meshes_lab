@@ -3,6 +3,8 @@ class Mesh {
   // see: https://en.wikipedia.org/wiki/Bounding_sphere
   float radius = 200;
   PShape shape;
+  PShape s_points;
+   float str_y;
   // mesh representation
   ArrayList<PVector> vertices;
 
@@ -23,70 +25,61 @@ class Mesh {
     build();
     //use processing style instead of pshape's, see https://processing.org/reference/PShape.html
     shape.disableStyle();
+    s_points.disableStyle();
   }
 
   // compute both mesh vertices and pshape
-  // TODO: implement me
   void build() {
     vertices = new ArrayList<PVector>();
-
-    vertices.add(new PVector(-100, -100, -100));
-    vertices.add(new PVector( 100, -100, -100));
-    vertices.add(new PVector(   0,    0,  100));
     
-    vertices.add(new PVector( 100, -100, -100));
-    vertices.add(new PVector( 100,  100, -100));
-    vertices.add(new PVector(   0,    0,  100));
+    PShape s = loadShape("wolf.obj");
     
-    vertices.add(new PVector( 100, 100, -100));
-    vertices.add(new PVector(-100, 100, -100));
-    vertices.add(new PVector(   0,   0,  100));
+    float m = radius, M = 0;
     
-    vertices.add(new PVector(-100,  100, -100));
-    vertices.add(new PVector(-100, -100, -100));
-    vertices.add(new PVector(   0,    0,  100));
-    
-    // for example if we were to render a quad:
-   
+    int children = s.getChildCount();
+    for (int i = 0; i < children; i++) {
+      PShape child = s.getChild(i);
+      int total = child.getVertexCount();
+      for(int j=0; j< total;j++){
+        vertices.add(child.getVertex(j));
+        float aux = child.getVertex(j).array()[1];
+        print(aux);
+        m = min(m , aux);
+        M = max(M, aux);
+      }
+    }
+    radius = (M-m)/2.0;
+    str_y = m + radius;
     
     shape = createShape();
+    s_points = createShape();
     shape.beginShape(TRIANGLES);
-    //shape.beginShape(QUAD_STRIP);
-    for(PVector v : vertices)
+    s_points.beginShape(POINTS);
+    for(PVector v : vertices) {
       shape.vertex(v.x, v.y ,v.z);
+      s_points.vertex(v.x, v.y, v.z);
+    }
+    s_points.endShape();
     shape.endShape();
-
-
-    //don't forget to compute radius too
   }
 
   // transfer geometry every frame
   // TODO: current implementation targets a quad.
   // Adapt me, as necessary
   void drawImmediate() {
-    beginShape(QUADS);
-    for(PVector v : vertices)
-      vertex(v.x, v.y ,v.z);
-    endShape();
-  }
-  
-  void points() {
-    translate(0,-100); 
-    PShape s =createShape();
-    beginShape(POINTS);
-    strokeWeight(2);
-    stroke(0,255,0);
-    int children = shape.getChildCount();
-    for (int i = 0; i < children; i++) {
-      PShape child = shape.getChild(i);
-      int total = child.getVertexCount();
-      for (int j = 0; j < total; j++) {
-        PVector v = child.getVertex(j);
-        //point(v.x, v.y, v.z);
-        vertex(v.x, v.y, v.z);
-      }
+    if(mode == 3){
+      beginShape(POINTS);
+      translate(0,-100);
+      for(PVector v : vertices)
+        vertex(v.x, v.y ,v.z);
+      endShape();
+    }else{
+      beginShape(TRIANGLES);
+      translate(0,-100);
+      for(PVector v : vertices)
+        vertex(v.x, v.y ,v.z);
+      endShape();
     }
-    endShape();
   }
 
   void draw() {
@@ -109,20 +102,15 @@ class Mesh {
     case 2:
       noStroke();
       break;
-    case 3:
-      noFill();
-      noStroke();
-      points();
-      break;
     }
     
     // rendering modes
     if (retained){
-      shape(shape);
-    }else{
-      //translate(0,-100);
+      if (mode == 3)
+        shape(s_points,0,-100);
+      shape(shape,0,-100);
+    }else
       drawImmediate();
-    }
     popStyle();
 
     // visual hint
@@ -130,6 +118,7 @@ class Mesh {
       pushStyle();
       noStroke();
       fill(0, 255, 255, 125);
+      translate(0, str_y);
       sphere(radius);
       popStyle();
     }
