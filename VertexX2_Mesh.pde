@@ -58,8 +58,13 @@ class VertexX2_Mesh extends Basic_Mesh{
     }else{
       PShape s = createShape();
       s.beginShape(TRIANGLES);
-      for(PVector v : vertices)
-        s.vertex(v.x, v.y ,v.z);
+      for(int i =0; i < vertex_list.size();i++) {
+        PVector cvertex;
+        for(int nxt: vertex_list.get(i)) {
+          cvertex = vertices.get(nxt);
+          s.vertex(cvertex.x, cvertex.y, cvertex.z);
+        }
+      }
       s.endShape();
       shape(s, 0, -100);
     }

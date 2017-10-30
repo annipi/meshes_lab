@@ -33,7 +33,7 @@ abstract class Basic_Mesh {
 
     // mesh visual attributes 
     // manipulate me as you wish
-    int strokeWeight = 2; //3
+    int strokeWeight = 1; //3
     color lineColor = color(255, retained ? 0 : 255, 0);
     color faceColor = color(0, retained ? 0 : 255, 255, 100);
 

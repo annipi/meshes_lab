@@ -37,5 +37,6 @@ void keyPressed() {
     flag =!flag;
   if (key == '1')
     mesh = new VertexX2_Mesh();
-  //if (key == '2')
+  if (key == '2')
+    mesh = new FaceVertex_Mesh();
 }
