@@ -34,22 +34,14 @@ class Mesh {
     
     PShape s = loadShape("wolf.obj");
     
-    float m = radius, M = 0;
-    
     int children = s.getChildCount();
     for (int i = 0; i < children; i++) {
       PShape child = s.getChild(i);
       int total = child.getVertexCount();
       for(int j=0; j< total;j++){
         vertices.add(child.getVertex(j));
-        float aux = child.getVertex(j).array()[1];
-        print(aux);
-        m = min(m , aux);
-        M = max(M, aux);
       }
     }
-    radius = (M-m)/2.0;
-    str_y = m + radius;
     
     shape = createShape();
     s_points = createShape();
@@ -68,17 +60,19 @@ class Mesh {
   // Adapt me, as necessary
   void drawImmediate() {
     if(mode == 3){
-      beginShape(POINTS);
-      translate(0,-100);
+      PShape s = createShape();
+      s.beginShape(POINTS);
       for(PVector v : vertices)
-        vertex(v.x, v.y ,v.z);
-      endShape();
+        s.vertex(v.x, v.y ,v.z);
+      s.endShape();
+      shape(s, 0, -100);
     }else{
-      beginShape(TRIANGLES);
-      translate(0,-100);
+      PShape s = createShape();
+      s.beginShape(TRIANGLES);
       for(PVector v : vertices)
-        vertex(v.x, v.y ,v.z);
-      endShape();
+        s.vertex(v.x, v.y ,v.z);
+      s.endShape();
+      shape(s, 0, -100);
     }
   }
 
@@ -106,9 +100,11 @@ class Mesh {
     
     // rendering modes
     if (retained){
-      if (mode == 3)
+      if (mode == 3){
         shape(s_points,0,-100);
-      shape(shape,0,-100);
+      }else{
+        shape(shape,0,-100);
+      }
     }else
       drawImmediate();
     popStyle();
@@ -117,7 +113,7 @@ class Mesh {
     if (boundingSphere) {
       pushStyle();
       noStroke();
-      fill(0, 255, 255, 125);
+      fill(0, 255, 0, 50);
       translate(0, str_y);
       sphere(radius);
       popStyle();

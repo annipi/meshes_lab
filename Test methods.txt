@@ -1,0 +1,44 @@
+vertices = new ArrayList<PVector>();
+
+int children = shape.getChildCount();
+println(children);
+	for (int i = 0; i < children; i++) {
+		PShape child = shape.getChild(i);
+		int total = child.getVertexCount();
+		for (int j = 0; j < total; j++) {
+		PVector v = child.getVertex(0);
+		vertices.add(v);
+	}
+}
+
+  void points() {
+    beginShape(POINTS);
+    stroke(0,255,0);
+    int children = shape.getChildCount();
+    for (int i = 0; i < children; i++) {
+      PShape child = shape.getChild(i);
+      int total = child.getVertexCount();
+      for (int j = 0; j < total; j++) {
+        PVector v = child.getVertex(j);
+        point(v.x, v.y, v.z);
+        //vertex(v.x, v.y, v.z);
+      }
+    }
+    endShape();
+  }
+  
+  ArrayList getObjVertex(){
+    vertices = new ArrayList<PVector>();
+    
+    int children = shape.getChildCount();
+    println(children);
+    for (int i = 0; i < children; i++) {
+      PShape child = shape.getChild(i);
+      int total = child.getVertexCount();
+      for (int j = 0; j < total; j++) {
+        PVector v = child.getVertex(0);
+        vertices.add(v);
+      }
+    }
+    return vertices;
+  }
