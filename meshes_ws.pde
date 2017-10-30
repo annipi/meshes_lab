@@ -1,4 +1,4 @@
-Mesh mesh;
+Basic_Mesh mesh;
 boolean flag = false;
 
 void setup() {
@@ -10,7 +10,7 @@ void setup() {
 
 void draw() {
   background(200);//0
-  text("Mesh mode: " + mesh.mode + ". Rendering mode: " + (mesh.retained ? "retained" : "immediate") + ". FPS: " + frameRate, 10 ,10);
+  text("Mesh mode: " + mesh.mode + ". Rendering mode: " + (mesh.retained ? "retained" : "immediate") + ". Mesh Class: " + mesh.getClass().getName() + ". FPS: " + frameRate, 10 ,10);
   lights();
   // draw the mesh at the canvas center
   // while performing a little animation
@@ -23,7 +23,7 @@ void draw() {
     rotateY(frameCount*radians(90) / 50);
   }
   // mesh draw method
-  mesh.draw();
+    mesh.draw();
 }
 
 void keyPressed() {
@@ -35,4 +35,7 @@ void keyPressed() {
     mesh.boundingSphere = !mesh.boundingSphere;
   if(key == 'm')
     flag =!flag;
+  if (key == '1')
+    mesh = new VertexX2_Mesh();
+  //if (key == '2')
 }
